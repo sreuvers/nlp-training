@@ -157,6 +157,12 @@ class ModelArguments:
         default=True,
         metadata={"help": "Whether to use one of the fast tokenizer (backed by the tokenizers library) or not."},
     )
+
+    save_all_checkpoints: bool = field(
+        default=False,
+        metadata={"help": "Whether to keep every checkpoint save of the model."},
+    )
+
     dtype: Optional[str] = field(
         default="float32",
         metadata={
@@ -760,8 +766,8 @@ def main():
                 # save checkpoint after each epoch and push checkpoint to the hub
                 if jax.process_index() == 0:
                     params = jax.device_get(jax.tree_map(lambda x: x[0], state.params))
-                    model.save_pretrained(training_args.output_dir, params=params)
-                    tokenizer.save_pretrained(training_args.output_dir)
+                    model.save_pretrained(training_args.output_dir +"/checkpoint_" + str(cur_step), params=params)
+                    tokenizer.save_pretrained(training_args.output_dir+"/checkpoint_" + str(cur_step))
                     if training_args.push_to_hub:
                         repo.push_to_hub(commit_message=f"Saving weights and logs of step {cur_step}", blocking=False)
 
