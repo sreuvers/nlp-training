@@ -97,8 +97,10 @@ class TrainingArguments:
     warmup_steps: int = field(default=0, metadata={"help": "Linear warmup over warmup_steps."})
     logging_steps: int = field(default=500, metadata={"help": "Log every X updates steps."})
     save_steps: int = field(default=500, metadata={"help": "Save checkpoint every X updates steps."})
+    save_all_checkpoints: bool = field(default=False, metadata={"help": "Whether to keep every checkpoint save of the model."})
     eval_steps: int = field(default=None, metadata={"help": "Run an evaluation every X steps."})
     seed: int = field(default=42, metadata={"help": "Random seed that will be set at the beginning of training."})
+
     push_to_hub: bool = field(
         default=False, metadata={"help": "Whether or not to upload the trained model to the model hub after training."}
     )
@@ -157,12 +159,6 @@ class ModelArguments:
         default=True,
         metadata={"help": "Whether to use one of the fast tokenizer (backed by the tokenizers library) or not."},
     )
-
-    save_all_checkpoints: bool = field(
-        default=False,
-        metadata={"help": "Whether to keep every checkpoint save of the model."},
-    )
-
     dtype: Optional[str] = field(
         default="float32",
         metadata={
