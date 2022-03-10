@@ -62,7 +62,7 @@ wandb.require(experiment="service")
 wandb.init(project="cryptoBERT", entity="srnl",resume="allow")
 
 sweep_config = {
-    'name' : name_sweep,
+    'name' : "tpu feest",
     'method': 'grid', #grid, random, bayesian
     'metric': {
       'name': 'eval/accuracy',
