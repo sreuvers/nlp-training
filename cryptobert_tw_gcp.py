@@ -52,13 +52,11 @@ path_output = '/home/bijlesjvl/model/fineTuned_small'
 # Commented out IPython magic to ensure Python compatibility.
 
 import wandb
-
-wandb.login()
 # %env WANDB_PROJECT=cryptoBERT
 # %env WANDB_LOG_MODEL=true
 
 wandb.require(experiment="service")
-
+wandb.login()
 wandb.init(project="cryptoBERT", entity="srnl",resume="allow")
 
 sweep_config = {
