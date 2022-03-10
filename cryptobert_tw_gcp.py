@@ -61,8 +61,6 @@ wandb.require(experiment="service")
 
 wandb.init(project="cryptoBERT", entity="srnl",resume="allow")
 
-name_sweep = options[0]['folder']
-
 sweep_config = {
     'name' : name_sweep,
     'method': 'grid', #grid, random, bayesian
