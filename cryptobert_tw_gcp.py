@@ -10,7 +10,7 @@ set_seed(2021)
 TRAIN = True
 FIRST_RUN = True
 FIRST_PREDICT = True
-COLAB = True
+COLAB = False
 
 if COLAB:
   path_data = '/content/drive/MyDrive/Thesis/CryptoBERT/datasets/old/test_train_10000_val_1000'
