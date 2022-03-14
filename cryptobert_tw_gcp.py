@@ -1,12 +1,13 @@
 import os
 os.environ['LD_LIBRARY_PATH']='/usr/local/lib'
-from transformers import Trainer, TrainingArguments, BertForSequenceClassification, DistilBertForSequenceClassification, set_seed, HfArgumentParser
+from transformers import Trainer, TrainingArguments, AutoTokenizer, AutoModelForSequenceClassification, set_seed, HfArgumentParser
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 import torch
 import torch_xla.core.xla_model as xm
 import torch_xla.distributed.xla_multiprocessing as xmp
 from dataclasses import asdict, dataclass, field
 from typing import Dict, List, Optional, Tuple
+from datasets import load_from_disk
 
 set_seed(2021)
 
@@ -46,11 +47,10 @@ def train_BERT(model, args):
     """
     This contains everything that must be done to train our models
     """
-    train_path = args.path_data + "/train.pt"
-    val_path = args.path_data + "/validation.pt"
+    data = load_from_disk(args.path_data)
 
-    train_dataset = torch.load(train_path)
-    val_dataset = torch.load(val_path)
+    train_dataset = data['train']
+    val_dataset = data['test']
 
     training_args = TrainingArguments(
         num_train_epochs=args.epochs,
@@ -92,8 +92,6 @@ class TrainingArgumentsInput:
     """
     Arguments pertaining to what data we are going to input our model for training and eval.
     """
-    train_file: Optional[str] = field(default=None, metadata={"help": "The input tokenized training data file"})
-    validation_file: Optional[str] = field(default=None, metadata={"help": "The input tokenized validation data file"})
     name_run: Optional[str] = field(default=None, metadata={"help": "The name of the run"})
     path_output: Optional[str] = field(default=None, metadata={"help": "The output path"})
     path_data: Optional[str] = field(default=None, metadata={"help": "The data path"})
@@ -101,7 +99,6 @@ class TrainingArgumentsInput:
 
     # TODO: properly import model and tokenizer
     path_model: Optional[str] = field(default=None, metadata={"help": "The model path"})
-    path_tokenizer: Optional[str] = field(default=None, metadata={"help": "The tokenizer path"})
 
     epochs: Optional[int] = field(default=3, metadata={"help": "The input tokenized training data file"})
     train_batch_size: Optional[int] = field(default=32, metadata={"help": "The input tokenized validation data file"})
@@ -112,11 +109,13 @@ class TrainingArgumentsInput:
 if __name__ == "__main__":
     parser = HfArgumentParser((TrainingArgumentsInput))
     args = parser.parse_args_into_dataclasses()[0]
-    args.path_output = args.path_output + args.name_run
+    args.path_output = args.path_output
 
     os.environ["WANDB_DISABLED"] = "true"
 
-    model = DistilBertForSequenceClassification.from_pretrained("distilbert-base-uncased")
+    tokenizer = AutoTokenizer.from_pretrained()
+    model = AutoModelForSequenceClassification.from_pretrained(
+        'bert-base-uncased')  # Download model and configuration from S3 and cache.
 
     model.train()
 
