@@ -1,17 +1,9 @@
-import pickle
-from sklearn.model_selection import train_test_split
 import os
 os.environ['LD_LIBRARY_PATH']='/usr/local/lib'
-import torch_xla.distributed.xla_multiprocessing as xmp
 from transformers import Trainer, TrainingArguments, BertForSequenceClassification, DistilBertForSequenceClassification, set_seed
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
-import pickle
-from sklearn.model_selection import train_test_split
-import os
 import torch
-import pandas as pd
 import torch_xla.core.xla_model as xm
-import torch_xla.distributed.parallel_loader as pl
 import torch_xla.distributed.xla_multiprocessing as xmp
 set_seed(2021)
 
@@ -27,6 +19,18 @@ else:
   path_data = '/home/bijlesjvl/data/test_train_10000_val_1000'
   path_output = '/home/bijlesjvl/model/fineTuned_small'
 
+class TweetsDataset(torch.utils.data.Dataset):
+    def __init__(self, encodings, labels):
+        self.encodings = encodings
+        self.labels = labels
+
+    def __getitem__(self, idx):
+        item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
+        item['labels'] = torch.tensor(self.labels[idx])
+        return item
+
+    def __len__(self):
+        return len(self.labels)
 
 def compute_metrics(pred):
     """
