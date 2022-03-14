@@ -1,6 +1,6 @@
 import os
 os.environ['LD_LIBRARY_PATH']='/usr/local/lib'
-from transformers import Trainer, TrainingArguments, BertForSequenceClassification, DistilBertForSequenceClassification, set_seed
+from transformers import Trainer, TrainingArguments, BertForSequenceClassification, DistilBertForSequenceClassification, set_seed, HfArgumentParser
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 import torch
 import torch_xla.core.xla_model as xm
@@ -40,31 +40,31 @@ def compute_metrics(pred):
     }
 
 
-def train_BERT(model, epochs=5, train_batch_size=32, eval_batch_size=32, learning_rate=5e-5, warmup_steps=1000,
-               folder='bal-bal_train_500000_val_25000'):
+def train_BERT(model, args):
     """
     This contains everything that must be done to train our models
     """
-    train_path = path_data + "/train.pt"
-    val_path = path_data + "/validation.pt"
+    train_path = args.path_data + "/train.pt"
+    val_path = args.path_data + "/validation.pt"
 
     train_dataset = torch.load(train_path)
     val_dataset = torch.load(val_path)
 
     training_args = TrainingArguments(
-        output_dir=path_output + 'results/',
-        num_train_epochs=epochs,
-        warmup_steps=warmup_steps,
+        output_dir=args.path_output + 'results/',
+        num_train_epochs=args.epochs,
+        warmup_steps=args.warmup_steps,
         evaluation_strategy="epoch",
         eval_accumulation_steps=10,
         save_strategy="epoch",
         weight_decay=0.01,  # strength of weight decay
-        logging_dir=path_output + 'logs/',  # directory for storing logs
+        logging_dir=args.path_output + 'logs/',  # directory for storing logs
         load_best_model_at_end=True,
-        learning_rate=learning_rate,
+        learning_rate=args.learning_rate,
         metric_for_best_model="f1",
-        per_device_train_batch_size=train_batch_size,  # batch size per device during training
-        per_device_eval_batch_size=eval_batch_size,  # batch size for evaluation
+        overwrite_output_dir =True,
+        per_device_train_batch_size=args.train_batch_size,  # batch size per device during training
+        per_device_eval_batch_size=args.eval_batch_size,  # batch size for evaluation
         # report_to="wandb",  # enable logging to W&B
         run_name="Finetuning on TPU"  # name of the W&B run (optional)
     )
@@ -79,27 +79,41 @@ def train_BERT(model, epochs=5, train_batch_size=32, eval_batch_size=32, learnin
     trainer.place_model_on_device = False
     trainer.train()
 
-def _mp_fn(index):
+def _mp_fn(index,args):
     device = xm.xla_device()
     # We wrap this
-    model = WRAPPED_MODEL.to(device)
-    train_BERT(model)
+    model = WRAPPED_MODEL.to(device, )
+    train_BERT(model, args)
 
+@dataclass
+class TrainingArguments:
+    """
+    Arguments pertaining to what data we are going to input our model for training and eval.
+    """
+    train_file: Optional[str] = field(default=None, metadata={"help": "The input tokenized training data file"})
+    validation_file: Optional[str] = field(default=None, metadata={"help": "The input tokenized validation data file"})
+    name_run: Optional[str] = field(default=None, metadata={"help": "The name of the run"})
+    path_output: Optional[str] = field(default=None, metadata={"help": "The output path"})
+    path_data: Optional[str] = field(default=None, metadata={"help": "The data path"})
+
+
+    # TODO: properly import model and tokenizer
+    path_model: Optional[str] = field(default=None, metadata={"help": "The model path"})
+    path_tokenizer: Optional[str] = field(default=None, metadata={"help": "The tokenizer path"})
+
+    epochs: Optional[int] = field(default=3, metadata={"help": "The input tokenized training data file"})
+    train_batch_size: Optional[int] = field(default=32, metadata={"help": "The input tokenized validation data file"})
+    eval_batch_size: Optional[int] = field(default=32, metadata={"help": "The name of the run"})
+    learning_rate: Optional[float] = field(default=5e-5, metadata={"help": "The output path"})
+    warmup_steps: Optional[int] = field(default=500, metadata={"help": "The output path"})
 
 if __name__ == "__main__":
-    TRAIN = True
-    FIRST_RUN = True
-    FIRST_PREDICT = True
-    COLAB = False
+    parser = HfArgumentParser(TrainingArguments)
+    args = parser.parse_args_into_dataclasses()
+
+    args.path_output = args.path_output + args.name_run
 
     os.environ["WANDB_DISABLED"] = "true"
-
-    if COLAB:
-        path_data = '/content/drive/MyDrive/Thesis/CryptoBERT/datasets/old/test_train_10000_val_1000'
-        path_output = '/content/drive/MyDrive/Thesis/CryptoBERT/fineTuned_small'
-    else:
-        path_data = '/home/bijlesjvl/data/test_train_10000_val_1000'
-        path_output = '/home/bijlesjvl/model/fineTuned_small'
 
     model = DistilBertForSequenceClassification.from_pretrained("distilbert-base-uncased")
 
@@ -108,4 +122,4 @@ if __name__ == "__main__":
     WRAPPED_MODEL = xmp.MpModelWrapper(model)
 
     xmp.spawn(_mp_fn, nprocs=8, start_method="fork")
-    wandb.finish()
+
