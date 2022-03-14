@@ -88,7 +88,7 @@ def _mp_fn(index,args):
     train_BERT(model, args)
 
 @dataclass
-class TrainingArguments:
+class TrainingArgumentsInput:
     """
     Arguments pertaining to what data we are going to input our model for training and eval.
     """
@@ -110,7 +110,7 @@ class TrainingArguments:
     warmup_steps: Optional[int] = field(default=500, metadata={"help": "The output path"})
 
 if __name__ == "__main__":
-    parser = HfArgumentParser((TrainingArguments))
+    parser = HfArgumentParser((TrainingArgumentsInput))
     args = parser.parse_args_into_dataclasses()[0]
     args.path_output = args.path_output + args.name_run
 
