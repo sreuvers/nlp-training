@@ -92,6 +92,8 @@ if __name__ == "__main__":
     FIRST_PREDICT = True
     COLAB = False
 
+    os.environ["WANDB_DISABLED"] = "true"
+
     if COLAB:
         path_data = '/content/drive/MyDrive/Thesis/CryptoBERT/datasets/old/test_train_10000_val_1000'
         path_output = '/content/drive/MyDrive/Thesis/CryptoBERT/fineTuned_small'
