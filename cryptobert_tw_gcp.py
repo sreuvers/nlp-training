@@ -6,6 +6,7 @@ import torch
 import torch_xla.core.xla_model as xm
 import torch_xla.distributed.xla_multiprocessing as xmp
 from dataclasses import asdict, dataclass, field
+from typing import Dict, List, Optional, Tuple
 
 set_seed(2021)
 
