@@ -78,12 +78,12 @@ def train_BERT(model, epochs=5, train_batch_size=32, eval_batch_size=32, learnin
     trainer.place_model_on_device = False
     trainer.train()
 
-# !pip install -U numpy
 def _mp_fn(index):
     device = xm.xla_device()
     # We wrap this
     model = WRAPPED_MODEL.to(device)
     train_BERT(model)
+
 
 if __name__ == "__main__":
     TRAIN = True
@@ -98,6 +98,11 @@ if __name__ == "__main__":
         path_data = '/home/bijlesjvl/data/test_train_10000_val_1000'
         path_output = '/home/bijlesjvl/model/fineTuned_small'
 
+    model = DistilBertForSequenceClassification.from_pretrained("distilbert-base-uncased")
 
-    xmp.spawn(_mp_fn, nprocs=8,start_method="fork")
+    model.train()
+
+    WRAPPED_MODEL = xmp.MpModelWrapper(model)
+
+    xmp.spawn(_mp_fn, nprocs=8, start_method="fork")
     wandb.finish()
