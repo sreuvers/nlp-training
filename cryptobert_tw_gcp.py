@@ -7,18 +7,6 @@ import torch_xla.core.xla_model as xm
 import torch_xla.distributed.xla_multiprocessing as xmp
 set_seed(2021)
 
-TRAIN = True
-FIRST_RUN = True
-FIRST_PREDICT = True
-COLAB = False
-
-if COLAB:
-  path_data = '/content/drive/MyDrive/Thesis/CryptoBERT/datasets/old/test_train_10000_val_1000'
-  path_output = '/content/drive/MyDrive/Thesis/CryptoBERT/fineTuned_small'
-else:
-  path_data = '/home/bijlesjvl/data/test_train_10000_val_1000'
-  path_output = '/home/bijlesjvl/model/fineTuned_small'
-
 class TweetsDataset(torch.utils.data.Dataset):
     def __init__(self, encodings, labels):
         self.encodings = encodings
@@ -97,6 +85,19 @@ def _mp_fn(index):
     model = WRAPPED_MODEL.to(device)
     train_BERT(model)
 
-xmp.spawn(_mp_fn, nprocs=8,start_method="fork")
+if __name__ == "__main__":
+    TRAIN = True
+    FIRST_RUN = True
+    FIRST_PREDICT = True
+    COLAB = False
 
-wandb.finish()
+    if COLAB:
+        path_data = '/content/drive/MyDrive/Thesis/CryptoBERT/datasets/old/test_train_10000_val_1000'
+        path_output = '/content/drive/MyDrive/Thesis/CryptoBERT/fineTuned_small'
+    else:
+        path_data = '/home/bijlesjvl/data/test_train_10000_val_1000'
+        path_output = '/home/bijlesjvl/model/fineTuned_small'
+
+
+    xmp.spawn(_mp_fn, nprocs=8,start_method="fork")
+    wandb.finish()
