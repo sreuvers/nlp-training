@@ -53,20 +53,20 @@ def train_BERT(model, args):
     val_dataset = torch.load(val_path)
 
     training_args = TrainingArguments(
-        output_dir=args.path_output + 'results/',
         num_train_epochs=args.epochs,
         warmup_steps=args.warmup_steps,
         evaluation_strategy="epoch",
         eval_accumulation_steps=10,
         save_strategy="epoch",
         weight_decay=0.01,  # strength of weight decay
-        logging_dir=args.path_output + 'logs/',  # directory for storing logs
+        logging_dir=args.path_output + '/logs/',  # directory for storing logs
         load_best_model_at_end=True,
         learning_rate=args.learning_rate,
         metric_for_best_model="f1",
-        overwrite_output_dir =True,
         per_device_train_batch_size=args.train_batch_size,  # batch size per device during training
         per_device_eval_batch_size=args.eval_batch_size,  # batch size for evaluation
+        output_dir=args.path_output + '/results/',
+        overwrite_output_dir=True,
         # report_to="wandb",  # enable logging to W&B
         run_name="Finetuning on TPU"  # name of the W&B run (optional)
     )
