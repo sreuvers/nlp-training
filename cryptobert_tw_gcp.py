@@ -5,6 +5,7 @@ from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 import torch
 import torch_xla.core.xla_model as xm
 import torch_xla.distributed.xla_multiprocessing as xmp
+
 set_seed(2021)
 
 class TweetsDataset(torch.utils.data.Dataset):
@@ -64,7 +65,7 @@ def train_BERT(model, epochs=5, train_batch_size=32, eval_batch_size=32, learnin
         metric_for_best_model="f1",
         per_device_train_batch_size=train_batch_size,  # batch size per device during training
         per_device_eval_batch_size=eval_batch_size,  # batch size for evaluation
-        report_to="wandb",  # enable logging to W&B
+        # report_to="wandb",  # enable logging to W&B
         run_name="Finetuning on TPU"  # name of the W&B run (optional)
     )
 
