@@ -113,9 +113,8 @@ if __name__ == "__main__":
 
     os.environ["WANDB_DISABLED"] = "true"
 
-    tokenizer = AutoTokenizer.from_pretrained()
-    model = AutoModelForSequenceClassification.from_pretrained(
-        'bert-base-uncased')  # Download model and configuration from S3 and cache.
+    tokenizer = AutoTokenizer.from_pretrained(args.path_model)
+    model = AutoModelForSequenceClassification.from_pretrained(args.path_model)
 
     model.train()
 
