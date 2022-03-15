@@ -7,7 +7,7 @@ import torch_xla.core.xla_model as xm
 import torch_xla.distributed.xla_multiprocessing as xmp
 from dataclasses import asdict, dataclass, field
 from typing import Dict, List, Optional, Tuple
-from datasets import load_from_disk
+from datasets import load_from_disk, load_dataset
 
 set_seed(2021)
 
@@ -106,6 +106,37 @@ class TrainingArgumentsInput:
     learning_rate: Optional[float] = field(default=5e-5, metadata={"help": "The output path"})
     warmup_steps: Optional[int] = field(default=500, metadata={"help": "The output path"})
 
+
+def tokenize_function(examples):
+    # Remove empty lines
+    examples = [line for line in examples if len(line) > 0 and not line.isspace()]
+    return tokenizer(
+        examples,
+        return_special_tokens_mask=True,
+        padding="max_length",
+        truncation=True,
+        max_length=128,
+    )
+
+def getDataset(args):
+    extension = args.train_file.split(".")[-1]
+    data_files = {}
+    data_files["train"] = args.train_file
+    data_files["validation"] = args.validation_file
+
+    datasets = load_dataset(extension, data_files=data_files)
+
+    column_names = datasets["train"].column_names
+    text_column_name = "text" if "text" in column_names else column_names[0]
+
+    tokenized_datasets = datasets.map(
+        tokenize_function,
+        input_columns=[text_column_name],
+        batched=True,
+        remove_columns=column_names)
+    return tokenized_datasets
+
+
 if __name__ == "__main__":
     parser = HfArgumentParser((TrainingArgumentsInput))
     args = parser.parse_args_into_dataclasses()[0]
@@ -114,7 +145,7 @@ if __name__ == "__main__":
     os.environ["WANDB_DISABLED"] = "true"
 
     tokenizer = AutoTokenizer.from_pretrained(args.path_model)
-    model = AutoModelForSequenceClassification.from_pretrained(args.path_model)
+    model = AutoModelForSequenceClassification.from_pretrained(args.path_model,from_flax=True)
 
     model.train()
 
