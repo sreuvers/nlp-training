@@ -8,7 +8,6 @@ import torch_xla.distributed.xla_multiprocessing as xmp
 from dataclasses import asdict, dataclass, field
 from typing import Dict, List, Optional, Tuple
 from datasets import load_from_disk, load_dataset
-import wandb
 set_seed(2021)
 
 class TweetsDataset(torch.utils.data.Dataset):
@@ -67,7 +66,7 @@ def train_BERT(model, args):
         per_device_eval_batch_size=args.eval_batch_size,  # batch size for evaluation
         output_dir=args.path_output + '/results/',
         overwrite_output_dir=True,
-        report_to="wandb",  # enable logging to W&B
+        # report_to="wandb",  # enable logging to W&B
         run_name="Finetuning on TPU"  # name of the W&B run (optional)
     )
 
@@ -138,12 +137,12 @@ def getDataset(args):
 
 
 if __name__ == "__main__":
-    wandb.require(experiment="service")
+    # wandb.require(experiment="service")
     parser = HfArgumentParser((TrainingArgumentsInput))
     args = parser.parse_args_into_dataclasses()[0]
     args.path_output = args.path_output
 
-    # os.environ["WANDB_DISABLED"] = "true"
+    os.environ["WANDB_DISABLED"] = "true"
 
     tokenizer = AutoTokenizer.from_pretrained(args.path_model)
     model = AutoModelForSequenceClassification.from_pretrained(args.path_model,from_flax=True)
