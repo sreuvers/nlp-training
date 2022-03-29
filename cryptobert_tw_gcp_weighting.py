@@ -62,7 +62,7 @@ def train_BERT(model, args):
     """
     This contains everything that must be done to train our models
     """
-    data = getDataset(args)
+    data = load_from_disk(args.path_data + 'tokenized')
 
     train_dataset = data['train']
     val_dataset = data['test']
@@ -114,6 +114,7 @@ class TrainingArgumentsInput:
     path_output: Optional[str] = field(default=None, metadata={"help": "The output path"})
     path_data: Optional[str] = field(default=None, metadata={"help": "The data path"})
 
+    model_name: Optional[str] = field(default=None, metadata={"help": "The model name"})
 
     # TODO: properly import model and tokenizer
     path_model: Optional[str] = field(default=None, metadata={"help": "The model path"})
@@ -128,7 +129,7 @@ class TrainingArgumentsInput:
 def tokenize_function(examples):
     # Remove empty lines
     examples = [line for line in examples if len(line) > 0 and not line.isspace()]
-    return tokenizer(
+    return tokenizer_custom(
         examples,
         return_special_tokens_mask=True,
         padding="max_length",
@@ -149,7 +150,8 @@ def getDataset(args):
         input_columns=[text_column_name],
         batched=True,
         remove_columns=column_names_remove)
-    return tokenized_datasets
+
+    tokenized_datasets.save_to_disk(args.path_data + 'tokenized')
 
 
 if __name__ == "__main__":
@@ -160,9 +162,15 @@ if __name__ == "__main__":
 
     os.environ["WANDB_DISABLED"] = "true"
 
-    tokenizer = AutoTokenizer.from_pretrained(args.path_model)
-    model = AutoModelForSequenceClassification.from_pretrained(args.path_model,from_flax=True)
+    tokenizer_custom = AutoTokenizer.from_pretrained(args.path_model)
+    if "Crypto" in args.model_name:
+        print("LOAD CUSTOM MODEL FROM FLASK")
+        model = AutoModelForSequenceClassification.from_pretrained(args.path_model,from_flax=True)
+    else:
+        print("LOAD MODEL FROM HUGGINGFACE")
+        model = AutoModelForSequenceClassification.from_pretrained(args.path_model)
 
+    getDataset(args)
     model.train()
 
     WRAPPED_MODEL = xmp.MpModelWrapper(model)
