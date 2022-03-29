@@ -90,7 +90,7 @@ def train_BERT(model, args):
         logging_steps=50
     )
 
-    trainer = Trainer(
+    trainer = CustomTrainer(
         model=model,
         args=training_args,
         compute_metrics=compute_metrics,
