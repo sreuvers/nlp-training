@@ -142,7 +142,7 @@ def getDataset(args):
     datasets = load_from_disk(args.path_data)
 
     column_names = datasets["train"].column_names
-    text_column_name = list("tweet" if "tweet" in column_names else column_names[0])
+    text_column_name = "tweet" if "tweet" in column_names else column_names[0]
     keep_names = ['labels']
     column_names_remove = [item for item in column_names if item not in keep_names]
     print(datasets)
