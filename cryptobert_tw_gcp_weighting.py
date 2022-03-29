@@ -62,7 +62,9 @@ def train_BERT(model, args):
     """
     This contains everything that must be done to train our models
     """
+    print("LOADING DATASET...")
     data = load_from_disk(args.path_data + 'tokenized')
+    print("LOADED DATASET!")
 
     train_dataset = data['train']
     val_dataset = data['test']
@@ -163,6 +165,7 @@ if __name__ == "__main__":
     os.environ["WANDB_DISABLED"] = "true"
 
     tokenizer_custom = AutoTokenizer.from_pretrained(args.path_model)
+    print("TOKENIZING DATASET...")
     getDataset(args)
     print("TOKENIZED DATASET!")
 
