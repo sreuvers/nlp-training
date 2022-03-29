@@ -97,6 +97,7 @@ def train_BERT(model, args):
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
     )
+    print(trainer.train_dataset[0])
     trainer.place_model_on_device = False
     trainer.train()
 
