@@ -52,7 +52,7 @@ class CustomTrainer(Trainer):
         outputs = model(**inputs)
         logits = outputs.get("logits")
         # compute custom loss (suppose one has 3 labels with different weights)
-        loss_fct = CrossEntropyLoss(weight=torch.tensor([4.14763207, 0.56853761])).to(device='cuda')
+        loss_fct = CrossEntropyLoss(weight=torch.tensor([4.14763207, 0.56853761]))
         loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
 
         return (loss, outputs) if return_outputs else loss
@@ -97,7 +97,6 @@ def train_BERT(model, args):
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
     )
-    print(trainer.train_dataset[0])
     trainer.place_model_on_device = False
     trainer.train()
 
