@@ -62,7 +62,7 @@ def train_BERT(model, args):
     """
     This contains everything that must be done to train our models
     """
-    data = load_from_disk(args.path_data)
+    data = getDataset(args)
 
     train_dataset = data['train']
     val_dataset = data['test']
@@ -70,7 +70,6 @@ def train_BERT(model, args):
     training_args = TrainingArguments(
         num_train_epochs=args.epochs,
         warmup_steps=args.warmup_steps,
-        evaluation_strategy="epoch",
         eval_accumulation_steps=10,
         save_strategy="epoch",
         weight_decay=0.01,  # strength of weight decay
@@ -82,8 +81,12 @@ def train_BERT(model, args):
         per_device_eval_batch_size=args.eval_batch_size,  # batch size for evaluation
         output_dir=args.path_output + '/results/',
         overwrite_output_dir=True,
-        # report_to="wandb",  # enable logging to W&B
-        run_name="Finetuning on TPU"  # name of the W&B run (optional)
+        report_to="tensorboard",
+        run_name="Finetuning on TPU",  # name of the W&B run (optional)
+        evaluation_strategy="steps",
+        eval_steps = 50,
+        logging_strategy="steps",
+        logging_steps=50
     )
 
     trainer = Trainer(
@@ -134,21 +137,18 @@ def tokenize_function(examples):
     )
 
 def getDataset(args):
-    extension = args.train_file.split(".")[-1]
-    data_files = {}
-    data_files["train"] = args.train_file
-    data_files["validation"] = args.validation_file
-
-    datasets = load_dataset(extension, data_files=data_files)
+    datasets = load_from_disk(args.path_data)
 
     column_names = datasets["train"].column_names
-    text_column_name = "text" if "text" in column_names else column_names[0]
+    text_column_name = "tweet" if "tweet" in column_names else column_names[0]
+    keep_names = ['labels']
+    column_names_remove = [item for item in column_names if item not in keep_names]
 
     tokenized_datasets = datasets.map(
         tokenize_function,
         input_columns=[text_column_name],
         batched=True,
-        remove_columns=column_names)
+        remove_columns=column_names_remove)
     return tokenized_datasets
 
 
