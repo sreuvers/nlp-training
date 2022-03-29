@@ -163,6 +163,9 @@ if __name__ == "__main__":
     os.environ["WANDB_DISABLED"] = "true"
 
     tokenizer_custom = AutoTokenizer.from_pretrained(args.path_model)
+    getDataset(args)
+    print("TOKENIZED DATASET!")
+
     if "Crypto" in args.model_name:
         print("LOAD CUSTOM MODEL FROM FLASK")
         model = AutoModelForSequenceClassification.from_pretrained(args.path_model,from_flax=True)
@@ -170,7 +173,6 @@ if __name__ == "__main__":
         print("LOAD MODEL FROM HUGGINGFACE")
         model = AutoModelForSequenceClassification.from_pretrained(args.path_model)
 
-    getDataset(args)
     model.train()
 
     WRAPPED_MODEL = xmp.MpModelWrapper(model)
