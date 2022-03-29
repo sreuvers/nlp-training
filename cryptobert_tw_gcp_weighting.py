@@ -76,7 +76,6 @@ def train_BERT(model, args):
         save_strategy="epoch",
         weight_decay=0.01,  # strength of weight decay
         logging_dir=args.path_output + '/logs/',  # directory for storing logs
-        load_best_model_at_end=True,
         learning_rate=args.learning_rate,
         metric_for_best_model="f1",
         per_device_train_batch_size=args.train_batch_size,  # batch size per device during training
