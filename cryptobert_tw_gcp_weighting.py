@@ -146,12 +146,12 @@ def getDataset(args):
     text_column_name = list("tweet" if "tweet" in column_names else column_names[0])
     keep_names = ['labels']
     column_names_remove = [item for item in column_names if item not in keep_names]
-
+    print(datasets)
     tokenized_datasets = datasets.map(
         lambda examples: tokenize_function(examples[text_column_name]),
         batched=True,
         remove_columns=column_names_remove)
-
+    print(tokenized_datasets)
     tokenized_datasets.save_to_disk(args.path_data + 'tokenized')
 
 
