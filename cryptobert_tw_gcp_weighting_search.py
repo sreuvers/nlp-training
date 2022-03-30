@@ -24,26 +24,29 @@ class TweetsDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.labels)
+class metrics:
+    def __init__(self, args):
+        self.weights = [args.weight_1,args.weight_2]
 
-def compute_metrics(pred):
-    """
-    Compute metrics for Trainer
-    """
-    labels = pred.label_ids
-    preds = pred.predictions.argmax(-1)
-    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average="macro")
-    acc = accuracy_score(labels, preds)
-    loss_fct = CrossEntropyLoss(weight=torch.tensor([4.14763207, 0.56853761]))
-    loss = loss_fct(torch.from_numpy(pred.predictions).view(-1, 2), torch.from_numpy(labels).view(-1))
+    def compute_metrics(self,pred):
+        """
+        Compute metrics for Trainer
+        """
+        labels = pred.label_ids
+        preds = pred.predictions.argmax(-1)
+        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average="macro")
+        acc = accuracy_score(labels, preds)
+        loss_fct = CrossEntropyLoss(weight=torch.tensor(self.weights))
+        loss = loss_fct(torch.from_numpy(pred.predictions).view(-1, 2), torch.from_numpy(labels).view(-1))
 
-    return {
-        'accuracy': acc,
-        'f1': f1,
-        # 'macro f1': macro_f1,
-        'precision': precision,
-        'recall': recall,
-        'true loss' : loss
-    }
+        return {
+            'accuracy': acc,
+            'f1': f1,
+            # 'macro f1': macro_f1,
+            'precision': precision,
+            'recall': recall,
+            'true loss' : loss
+        }
 
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
@@ -52,7 +55,7 @@ class CustomTrainer(Trainer):
         outputs = model(**inputs)
         logits = outputs.get("logits")
         # compute custom loss (suppose one has 3 labels with different weights)
-        loss_fct = CrossEntropyLoss(weight=torch.tensor([4.14763207, 0.56853761]))
+        loss_fct = CrossEntropyLoss(weight=torch.tensor(model.custom_weights))
         loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
 
         return (loss, outputs) if return_outputs else loss
@@ -93,7 +96,7 @@ def train_BERT(model, args):
     trainer = CustomTrainer(
         model=model,
         args=training_args,
-        compute_metrics=compute_metrics,
+        compute_metrics=metrics.compute_metrics(),
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
     )
@@ -124,6 +127,9 @@ class TrainingArgumentsInput:
     eval_batch_size: Optional[int] = field(default=32, metadata={"help": "The name of the run"})
     learning_rate: Optional[float] = field(default=5e-5, metadata={"help": "The output path"})
     warmup_steps: Optional[int] = field(default=500, metadata={"help": "The output path"})
+    weights_1: Optional[int] = field(default=1, metadata={"help": "The input tokenized training data file"})
+    weights_2: Optional[int] = field(default=1, metadata={"help": "The input tokenized training data file"})
+
 
 
 def tokenize_function(examples):
@@ -170,7 +176,7 @@ if __name__ == "__main__":
     else:
         print("LOAD MODEL FROM HUGGINGFACE")
         model = AutoModelForSequenceClassification.from_pretrained(args.path_model)
-
+    model.custom_weights =[args.weight_1,args.weight_2]
     model.train()
 
     WRAPPED_MODEL = xmp.MpModelWrapper(model)
