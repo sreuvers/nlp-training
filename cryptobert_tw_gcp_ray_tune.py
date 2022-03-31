@@ -6,6 +6,8 @@ os.environ["RUN_NAME"]="weights_3_08"
 os.environ["PATH_OUTPUT"]="/home/bijlesjvl/model/Bertweet_fine-tuned/" + "weights_3_08"
 os.environ["PATH_DATA"]="/home/bijlesjvl/data/finetuning/StockTwits_test/"
 os.environ["LD_LIBRARY_PATH"]="/usr/local/lib"
+os.environ["XRT_TPU_CONFIG"]="localservice;0;localhost:51011"
+
 def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
     if not os.path.exists(directory):

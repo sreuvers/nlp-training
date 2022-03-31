@@ -24,29 +24,26 @@ class TweetsDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.labels)
-class metrics:
-    def __init__(self, args):
-        self.weights = [args.weight_1,args.weight_2]
 
-    def compute_metrics(self,pred):
-        """
-        Compute metrics for Trainer
-        """
-        labels = pred.label_ids
-        preds = pred.predictions.argmax(-1)
-        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average="macro")
-        acc = accuracy_score(labels, preds)
-        loss_fct = CrossEntropyLoss(weight=torch.tensor(self.weights))
-        loss = loss_fct(torch.from_numpy(pred.predictions).view(-1, 2), torch.from_numpy(labels).view(-1))
+def compute_metrics(pred):
+    """
+    Compute metrics for Trainer
+    """
+    labels = pred.label_ids
+    preds = pred.predictions.argmax(-1)
+    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average="macro")
+    acc = accuracy_score(labels, preds)
+    loss_fct = CrossEntropyLoss(weight=torch.tensor([float(args.weight_1), float(args.weight_2)]))
+    loss = loss_fct(torch.from_numpy(pred.predictions).view(-1, 2), torch.from_numpy(labels).view(-1))
 
-        return {
-            'accuracy': acc,
-            'f1': f1,
-            # 'macro f1': macro_f1,
-            'precision': precision,
-            'recall': recall,
-            'true loss' : loss
-        }
+    return {
+        'accuracy': acc,
+        'f1': f1,
+        # 'macro f1': macro_f1,
+        'precision': precision,
+        'recall': recall,
+        'true loss': loss
+    }
 
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
@@ -96,7 +93,7 @@ def train_BERT(model, args):
     trainer = CustomTrainer(
         model=model,
         args=training_args,
-        compute_metrics=metrics.compute_metrics(),
+        compute_metrics=compute_metrics,
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
     )
@@ -177,7 +174,7 @@ if __name__ == "__main__":
     else:
         print("LOAD MODEL FROM HUGGINGFACE")
         model = AutoModelForSequenceClassification.from_pretrained(args.path_model)
-    model.custom_weights =[args.weight_1,args.weight_2]
+    model.custom_weights =[float(args.weight_1), float(args.weight_2)]
     model.train()
 
     WRAPPED_MODEL = xmp.MpModelWrapper(model)
