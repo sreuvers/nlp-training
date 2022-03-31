@@ -44,8 +44,8 @@ os.system("python3 cryptobert_tw_gcp_weighting_search.py \
         --path_output=$PATH_OUTPUT \
         --path_data=$PATH_DATA \
         --path_model=$PATH_MODEL \
-        --weights_1='3' \
-        --weights_2='2' \
+        --weights_1=${config['weights_1} \
+        --weights_2=${config['weights_2} \
         --epochs='3' \
         --train_batch_size='128' \
         --eval_batch_size='128' \
