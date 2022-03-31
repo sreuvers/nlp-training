@@ -62,9 +62,7 @@ def train_BERT(model, args):
     """
     This contains everything that must be done to train our models
     """
-    print("LOADING DATASET...")
     data = load_from_disk(args.path_data + 'tokenized')
-    print("LOADED DATASET!")
 
     train_dataset = data['train']
     val_dataset = data['test']
@@ -157,10 +155,7 @@ def getDataset(args):
 if __name__ == "__main__":
     # wandb.require(experiment="service")
     parser = HfArgumentParser((TrainingArgumentsInput))
-    print(parser)
-    print(parser.parse_args_into_dataclasses())
     args = parser.parse_args_into_dataclasses()[0]
-    print(args)
     os.environ["WANDB_DISABLED"] = "true"
 
     tokenizer_custom = AutoTokenizer.from_pretrained(args.path_model)

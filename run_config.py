@@ -9,14 +9,17 @@ def ensure_dir(file_path):
 with open('/home/bijlesjvl/settings/configs.json') as json_file:
     configs = json.load(json_file)
 
-with open('/home/bijlesjvl/settings/log.json', 'w') as outfile:
-    log = json.load(outfile)
+with open('/home/bijlesjvl/settings/log.json') as json_file:
+    log = json.load(json_file)
+
 
 config = configs[int(log['current_config'])]
+print("CURRENT CONFIG: ")
+print(config)
 
 os.environ["PATH_MODEL"] = "vinai/bertweet-base"
 os.environ["MODEL_NAME"] = "Bertweet_fine-tuned"
-os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits_test/"
+os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
 os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
 os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
 PATH_OUTPUT = "/home/bijlesjvl/model/Bertweet_fine-tuned/"
