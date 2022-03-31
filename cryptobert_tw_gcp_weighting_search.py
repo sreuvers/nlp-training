@@ -179,5 +179,7 @@ if __name__ == "__main__":
 
     WRAPPED_MODEL = xmp.MpModelWrapper(model)
 
+    print("START TRAINING...")
     xmp.spawn(_mp_fn, args = (args,), nprocs=8, start_method="fork")
+    print("FINISHED TRAINING!")
 
