@@ -1,4 +1,3 @@
-import cryptobert_tw_gcp_weighting_search.py
 import os
 
 PATH_MODEL="vinai/bertweet-base"
@@ -6,7 +5,14 @@ MODEL_NAME="Bertweet_fine-tuned"
 RUN_NAME="weights_3_08"
 PATH_OUTPUT="/home/bijlesjvl/model/Bertweet_fine-tuned/" + RUN_NAME
 PATH_DATA="/home/bijlesjvl/data/finetuning/StockTwits_test/"
-os.mkdir(PATH_OUTPUT)
+
+def ensure_dir(file_path):
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+ensure_dir("/home/bijlesjvl/model/Bertweet_fine-tuned/")
+ensure_dir("/home/bijlesjvl/model/Bertweet_fine-tuned/" + RUN_NAME)
 
 os.system("cryptobert_tw_gcp_weighting \
     --model_name=MODEL_NAME \

@@ -161,7 +161,6 @@ if __name__ == "__main__":
     # wandb.require(experiment="service")
     parser = HfArgumentParser((TrainingArgumentsInput))
     args = parser.parse_args_into_dataclasses()[0]
-    args.path_output = args.path_output
 
     os.environ["WANDB_DISABLED"] = "true"
 
