@@ -33,7 +33,7 @@ def compute_metrics(pred):
     preds = pred.predictions.argmax(-1)
     precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average="macro")
     acc = accuracy_score(labels, preds)
-    loss_fct = CrossEntropyLoss(weight=torch.tensor([float(args.weight_1), float(args.weight_2)]))
+    loss_fct = CrossEntropyLoss(weight=torch.tensor([float(args.weights_1), float(args.weights_2)]))
     loss = loss_fct(torch.from_numpy(pred.predictions).view(-1, 2), torch.from_numpy(labels).view(-1))
 
     return {
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     else:
         print("LOAD MODEL FROM HUGGINGFACE")
         model = AutoModelForSequenceClassification.from_pretrained(args.path_model)
-    model.custom_weights =[float(args.weight_1), float(args.weight_2)]
+    model.custom_weights =[float(args.weights_1), float(args.weights_2)]
     model.train()
 
     WRAPPED_MODEL = xmp.MpModelWrapper(model)
