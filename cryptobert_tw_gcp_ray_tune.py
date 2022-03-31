@@ -34,7 +34,7 @@ for config in configs:
             os.makedirs(directory)
 
     ensure_dir(PATH_OUTPUT)
-    ensure_dir(PATH_OUTPUT + RUN_NAME)
+    ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
 
     os.system("python3 cryptobert_tw_gcp_weighting_search.py \
         --model_name=$MODEL_NAME \
