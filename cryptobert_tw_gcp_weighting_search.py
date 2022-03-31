@@ -116,8 +116,8 @@ class TrainingArgumentsInput:
 
     # TODO: properly import model and tokenizer
     path_model: Optional[str] = field(default=None, metadata={"help": "The model path"})
-    weights_1: Optional[int] = field(default=1, metadata={"help": "The weight of class 0"})
-    weights_2: Optional[int] = field(default=1, metadata={"help": "The weight of class 1"})
+    weights_1: Optional[float] = field(default=1, metadata={"help": "The weight of class 0"})
+    weights_2: Optional[float] = field(default=1, metadata={"help": "The weight of class 1"})
     epochs: Optional[int] = field(default=3, metadata={"help": "The input tokenized training data file"})
     train_batch_size: Optional[int] = field(default=32, metadata={"help": "The input tokenized validation data file"})
     eval_batch_size: Optional[int] = field(default=32, metadata={"help": "The name of the run"})
