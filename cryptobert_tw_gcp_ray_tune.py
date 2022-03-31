@@ -14,7 +14,7 @@ def ensure_dir(file_path):
 ensure_dir("/home/bijlesjvl/model/Bertweet_fine-tuned/")
 ensure_dir("/home/bijlesjvl/model/Bertweet_fine-tuned/" + "weights_3_08")
 
-os.system("cryptobert_tw_gcp_weighting \
+os.system("python3 cryptobert_tw_gcp_weighting_search.py \
     --model_name=$MODEL_NAME \
     --path_output=$PATH_OUTPUT \
     --path_data=$PATH_DATA \
