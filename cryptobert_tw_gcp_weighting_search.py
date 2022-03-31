@@ -121,14 +121,14 @@ class TrainingArgumentsInput:
 
     # TODO: properly import model and tokenizer
     path_model: Optional[str] = field(default=None, metadata={"help": "The model path"})
-
+    weights_1: Optional[int] = field(default=1, metadata={"help": "The weight of class 0"})
+    weights_2: Optional[int] = field(default=1, metadata={"help": "The weight of class 1"})
     epochs: Optional[int] = field(default=3, metadata={"help": "The input tokenized training data file"})
     train_batch_size: Optional[int] = field(default=32, metadata={"help": "The input tokenized validation data file"})
     eval_batch_size: Optional[int] = field(default=32, metadata={"help": "The name of the run"})
     learning_rate: Optional[float] = field(default=5e-5, metadata={"help": "The output path"})
     warmup_steps: Optional[int] = field(default=500, metadata={"help": "The output path"})
-    weights_1: Optional[int] = field(default=1, metadata={"help": "The input tokenized training data file"})
-    weights_2: Optional[int] = field(default=1, metadata={"help": "The input tokenized training data file"})
+
 
 
 
@@ -160,8 +160,10 @@ def getDataset(args):
 if __name__ == "__main__":
     # wandb.require(experiment="service")
     parser = HfArgumentParser((TrainingArgumentsInput))
+    print(parser)
+    print(parser.parse_args_into_dataclasses())
     args = parser.parse_args_into_dataclasses()[0]
-
+    print(args)
     os.environ["WANDB_DISABLED"] = "true"
 
     tokenizer_custom = AutoTokenizer.from_pretrained(args.path_model)
