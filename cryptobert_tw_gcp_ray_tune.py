@@ -2,9 +2,9 @@ import os
 from sklearn.model_selection import ParameterGrid
 
 param_grid = {"weights_1" : [8,7,6,5,4.5,4,3.5,3,2.5,2,1.5,1],
-            "weights_2" : 1,
-            "learning_rate": 3e-5,
-            "num_epochs": 2}
+            "weights_2" : [1],
+            "learning_rate": [3e-5],
+            "num_epochs": [2]}
 
 configs = list(ParameterGrid(param_grid))
 os.environ["PATH_MODEL"] = "vinai/bertweet-base"
@@ -22,6 +22,8 @@ for config in configs:
             RUN_NAME = RUN_NAME + f"{key}_{value}"
         else:
             RUN_NAME = RUN_NAME + f"{key}_{value}_"
+    print("START NEW RUN")
+    print(f"RUN NAME: {RUN_NAME}")
 
     os.environ["RUN_NAME"] = RUN_NAME
     os.environ["PATH_OUTPUT"] = PATH_OUTPUT + RUN_NAME
@@ -46,5 +48,7 @@ for config in configs:
         --eval_batch_size='128' \
         --learning_rate='5e-5' \
         --warmup_steps='100'")
+    print("FINISHED RUN, CONTINUE........")
+
 
 
