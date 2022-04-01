@@ -587,6 +587,11 @@ def main():
     eval_batch_size = int(training_args.per_device_eval_batch_size) * jax.device_count()
 
     num_train_steps = len(tokenized_datasets["train"]) // train_batch_size * num_epochs
+    print(f"LENGTH DATA: {len(tokenized_datasets["train"])}")
+    print(f"TRAIN BATCH SIZE: {train_batch_size}")
+    print(f"NUM EPOCHS: {num_epochs}")
+    print(f"NUM TRAIN STEPS: {num_train_steps}")
+
 
     # Create learning rate schedule
     warmup_fn = optax.linear_schedule(
