@@ -17,13 +17,13 @@ config = configs[int(log['current_config'])]
 print("CURRENT CONFIG: ")
 print(config)
 
-os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_TW_fine-tuned/"
-os.environ["MODEL_NAME"] = "CryptoBERT_TW_fine-tuned"
+os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_FIN/"
+os.environ["MODEL_NAME"] = "CryptoBERT_FIN_fine-tuned"
 os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
 os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
 os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
-os.environ["PATH_OUTPUT"] = "/home/bijlesjvl/model/CryptoBERT_TW_fine-tuned/"
-PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_TW_fine-tuned/"
+os.environ["PATH_OUTPUT"] = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
+PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
 
 RUN_NAME = ""
 for key, value in config.items():
