@@ -72,7 +72,7 @@ def train_BERT(model, args):
         warmup_steps=args.warmup_steps,
         eval_accumulation_steps=10,
         save_strategy="epoch",
-        weight_decay=0.01,  # strength of weight decay
+        weight_decay=0.1,  # strength of weight decay
         logging_dir=args.path_output + '/logs/',  # directory for storing logs
         learning_rate=args.learning_rate,
         metric_for_best_model="f1",

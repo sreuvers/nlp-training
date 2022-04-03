@@ -7,10 +7,10 @@ def ensure_dir(file_path):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-param_grid = {"weights_1": [8, 7, 6, 5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1],
+param_grid = {"weights_1": [4],
               "weights_2": [1],
               "learning_rate": [3e-5],
-              "num_epochs": [2]}
+              "num_epochs": [3]}
 
 configs = list(ParameterGrid(param_grid))
 jsonString = json.dumps(configs)
