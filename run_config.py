@@ -25,7 +25,7 @@ if mode == "FIN":
     os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
     os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
     PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
-else mode == "TW":
+else:
     print(f"SELECTED MODE IS: {mode}")
     os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_TW/"
     os.environ["MODEL_NAME"] = "CryptoBERT_TW_fine-tuned"
