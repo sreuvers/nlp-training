@@ -12,18 +12,28 @@ with open('/home/bijlesjvl/settings/configs.json') as json_file:
 with open('/home/bijlesjvl/settings/log.json') as json_file:
     log = json.load(json_file)
 
-
 config = configs[int(log['current_config'])]
 print("CURRENT CONFIG: ")
 print(config)
 
-os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_FIN/"
-os.environ["MODEL_NAME"] = "CryptoBERT_FIN_fine-tuned"
-os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
-os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
-os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
-os.environ["PATH_OUTPUT"] = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
-PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
+mode = "FIN"
+if mode == "FIN":
+    print(f"SELECTED MODE IS: {mode}")
+    os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_FIN/"
+    os.environ["MODEL_NAME"] = "CryptoBERT_FIN_fine-tuned"
+    os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
+    os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
+    os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
+    PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
+else mode == "TW":
+    print(f"SELECTED MODE IS: {mode}")
+    os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_TW/"
+    os.environ["MODEL_NAME"] = "CryptoBERT_TW_fine-tuned"
+    os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
+    os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
+    os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
+    PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_TW_fine-tuned/"
+
 
 RUN_NAME = ""
 for key, value in config.items():
@@ -51,7 +61,7 @@ os.system("python3 cryptobert_tw_gcp_weighting_search.py \
         --train_batch_size='128' \
         --eval_batch_size='128' \
         --learning_rate='5e-5' \
-        --warmup_steps='100'" % (config['weights_1'], config['weights_1']) )
+        --warmup_steps='100'" % (config['weights_1'], config['weights_2']) )
 
 
 log['current_config'] = log['current_config'] + 1
