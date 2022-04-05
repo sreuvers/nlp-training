@@ -56,13 +56,13 @@ def initialize_model(mode):
     else:
         ensure_dir("/home/bijlesjvl/model/CryptoBERT_{mode}/pretrained")
         if mode == "FIN":
-            os.system("""gsutil -m cp \
-                        "gs://thesis-tpu/model/CryptoBERT_FIN/CryptoBERT_FIN/*" \
-                        "/home/bijlesjvl/model/CryptoBERT_FIN/pretrained/""")
+            os.system("gsutil -m cp \
+                        gs://thesis-tpu/model/CryptoBERT_FIN/CryptoBERT_FIN/* \
+                        /home/bijlesjvl/model/CryptoBERT_FIN/pretrained/")
         else:
-            os.system("""gsutil -m cp \
-                        "gs://thesis-tpu/model/CryptoBERT_TW_pretrained_2/CryptoBERT_TW/*" \
-                        "/home/bijlesjvl/model/CryptoBERT_TW/pretrained/""")
+            os.system("gsutil -m cp \
+                        gs://thesis-tpu/model/CryptoBERT_TW_pretrained_2/CryptoBERT_TW/* \
+                        /home/bijlesjvl/model/CryptoBERT_TW/pretrained/")
 
 def initialize_scripts():
     ensure_dir("/home/bijlesjvl/scripts/")
