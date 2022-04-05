@@ -165,7 +165,7 @@ if __name__ == "__main__":
 
     if "Crypto" in args.model_name:
         print("LOAD CUSTOM MODEL FROM FLASK")
-        model = AutoModelForSequenceClassification.from_pretrained(args.path_model,from_flax=True)
+        model = AutoModelForSequenceClassification.from_pretrained(args.path_model,num_labels = 2, from_flax=True)
     else:
         print("LOAD MODEL FROM HUGGINGFACE")
         model = AutoModelForSequenceClassification.from_pretrained(args.path_model)

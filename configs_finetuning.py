@@ -7,7 +7,7 @@ def ensure_dir(file_path):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-param_grid = {"weights_1": [4],
+param_grid = {"weights_1": [1,1.5,2,4,6],
               "weights_2": [1],
               "learning_rate": [3e-5],
               "num_epochs": [3]}
