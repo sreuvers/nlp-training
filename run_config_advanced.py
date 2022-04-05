@@ -59,7 +59,7 @@ def initialize_model(mode):
             os.system("gsutil -m cp \
                         gs://thesis-tpu/model/CryptoBERT_FIN/CryptoBERT_FIN/* \
                         /home/bijlesjvl/model/CryptoBERT_FIN/pretrained/")
-        else:
+        elif mode == "TW":
             os.system("gsutil -m cp \
                         gs://thesis-tpu/model/CryptoBERT_TW_pretrained_2/CryptoBERT_TW/* \
                         /home/bijlesjvl/model/CryptoBERT_TW/pretrained/")
@@ -90,6 +90,14 @@ if __name__ == "__main__":
         os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
         os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
         PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
+    elif mode == "Bertweet":
+        print(f"SELECTED MODE IS: {mode}")
+        os.environ["PATH_MODEL"] = "vinai/bertweet-base"
+        os.environ["MODEL_NAME"] = "Bertweet"
+        os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
+        os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
+        os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
+        PATH_OUTPUT = "/home/bijlesjvl/model/Bertweet_fine-tuned/"
     else:
         print(f"SELECTED MODE IS: {mode}")
         os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_TW/pretrained/"
