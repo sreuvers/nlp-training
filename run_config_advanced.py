@@ -46,15 +46,14 @@ def get_search():
     return configs,log
 
 def initialize_data(test=False):
-    if os.path.exists('/home/bijlesjvl/data/finetuning/StockTwits/'):
+    if test.lower() == "true" and not os.path.exists('/home/bijlesjvl/data/finetuning/StockTwits_test/') :
+        print("GET TEST DATA")
+        os.system("gsutil -m cp -r gs://thesis-tpu/data/StockTwits_test /home/bijlesjvl/data/finetuning/")
+    elif os.path.exists('/home/bijlesjvl/data/finetuning/StockTwits/'):
         print("DATA ALREADY EXITS")
     else:
         ensure_dir("/home/bijlesjvl/data/finetuning/")
-        if test.lower()=="true":
-            print("GET TEST DATA")
-            os.system("gsutil -m cp -r gs://thesis-tpu/data/StockTwits_test /home/bijlesjvl/data/finetuning/")
-        else:
-            os.system("gsutil -m cp -r gs://thesis-tpu/data/StockTwits /home/bijlesjvl/data/finetuning/")
+        os.system("gsutil -m cp -r gs://thesis-tpu/data/StockTwits /home/bijlesjvl/data/finetuning/")
 
 def initialize_model(mode):
     if os.path.exists(f"/home/bijlesjvl/model/CryptoBERT_{mode}/pretrained"):
@@ -83,7 +82,7 @@ def run_command(command):
         if output == '' and process.poll() is not None:
             break
         if output:
-            print output.strip()
+            print(output.strip())
     rc = process.poll()
     return rc
 
@@ -99,6 +98,17 @@ if __name__ == "__main__":
 
     mode = sys.argv[1]
     test = sys.argv[2]
+    # if mode == "FIN":
+    #     print(f"SELECTED MODE IS: {mode}")
+    #     os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_FIN/pretrained/"
+    #     os.environ["MODEL_NAME"] = "CryptoBERT_FIN_fine-tuned"
+    #     if test.lower() == 'true':
+    #         os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits_test/"
+    #     else:
+    #         os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
+    #     os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
+    #     os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
+    #     PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
     if mode == "FIN":
         print(f"SELECTED MODE IS: {mode}")
         os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_FIN/pretrained/"
@@ -155,10 +165,10 @@ if __name__ == "__main__":
         ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
 
         command = "python3 scripts/cryptobert_tw_gcp_weighting_search.py \
-                --model_name=$MODEL_NAME \
-                --path_output=$PATH_OUTPUT \
-                --path_data=$PATH_DATA \
-                --path_model=$PATH_MODEL \
+                --model_name={os.environ['MODEL_NAME']} \
+                --path_output={os.environ['PATH_OUTPUT']} \
+                --path_data={os.environ['PATH_DATA']} \
+                --path_model={os.environ['PATH_MODEL']} \
                 --weights_1=%s \
                 --weights_2=%s \
                 --epochs='3' \
@@ -166,6 +176,7 @@ if __name__ == "__main__":
                 --eval_batch_size='128' \
                 --learning_rate='5e-5' \
                 --warmup_steps='100'" % (config['weights_1'], config['weights_2'])
+        print(f"command is: {command}")
 
         result = run_command(command)
         print(f"result command is: {result}")
