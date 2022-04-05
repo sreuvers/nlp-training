@@ -54,22 +54,21 @@ def initialize_model(mode):
     if os.path.exists(f"/home/bijlesjvl/model/CryptoBERT_{mode}/pretrained"):
         print("MODEL ALREADY EXITS")
     else:
-        ensure_dir("/home/bijlesjvl/model/CryptoBERT_{mode}/pretrained")
+        ensure_dir(f"/home/bijlesjvl/model/CryptoBERT_{mode}/pretrained/")
         if mode == "FIN":
-            ensure_dir("/home/bijlesjvl/model/CryptoBERT_FIN/pretrained/")
             os.system("gsutil -m cp \
                         gs://thesis-tpu/model/CryptoBERT_FIN/CryptoBERT_FIN/* \
                         /home/bijlesjvl/model/CryptoBERT_FIN/pretrained/")
         else:
-            ensure_dir("/home/bijlesjvl/model/CryptoBERT_TW/pretrained/")
             os.system("gsutil -m cp \
                         gs://thesis-tpu/model/CryptoBERT_TW_pretrained_2/CryptoBERT_TW/* \
                         /home/bijlesjvl/model/CryptoBERT_TW/pretrained/")
 
 def initialize_scripts():
     ensure_dir("/home/bijlesjvl/scripts/")
-    os.system("rm /home/bijlesjvl/scripts/cryptobert_tw_gcp_weighting_search.py")
-    os.system("wget https://raw.githubusercontent.com/sreuvers/nlp-training/main/cryptobert_tw_gcp_weighting.py -q")
+    if os.path.exists("/home/bijlesjvl/scripts/cryptobert_tw_gcp_weighting_search.py"):
+        os.system("rm /home/bijlesjvl/scripts/cryptobert_tw_gcp_weighting_search.py")
+    os.system("wget https://raw.githubusercontent.com/sreuvers/nlp-training/main/cryptobert_tw_gcp_weighting_search.py -P /home/bijlesjvl/scripts/ -q")
 
 
 if __name__ == "__main__":
@@ -104,6 +103,9 @@ if __name__ == "__main__":
     initialize_model(mode)
     print(f"STARTING CONFIGS FROM {log['current_config']}")
 
+    print("INITIALIZE SCRIPTS: ")
+    initialize_scripts()
+
     for i in range(log['current_config'],len(configs)):
         config = configs[i]
         RUN_NAME = ""
@@ -121,7 +123,7 @@ if __name__ == "__main__":
         ensure_dir(PATH_OUTPUT)
         ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
 
-        os.system("python3 /home/bijlesjvl/scripts/cryptobert_tw_gcp_weighting_search.py \
+        os.system("python3 scripts/cryptobert_tw_gcp_weighting_search.py \
                 --model_name=$MODEL_NAME \
                 --path_output=$PATH_OUTPUT \
                 --path_data=$PATH_DATA \
