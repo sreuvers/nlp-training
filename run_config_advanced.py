@@ -84,7 +84,7 @@ if __name__ == "__main__":
     mode = sys.argv[1]
     if mode == "FIN":
         print(f"SELECTED MODE IS: {mode}")
-        os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_FIN/"
+        os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_FIN/pretrained/"
         os.environ["MODEL_NAME"] = "CryptoBERT_FIN_fine-tuned"
         os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
         os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
     else:
         print(f"SELECTED MODE IS: {mode}")
-        os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_TW/"
+        os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_TW/pretrained/"
         os.environ["MODEL_NAME"] = "CryptoBERT_TW_fine-tuned"
         os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
         os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
@@ -123,7 +123,7 @@ if __name__ == "__main__":
         ensure_dir(PATH_OUTPUT)
         ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
 
-        os.system("python3 scripts/cryptobert_tw_gcp_weighting_search.py \
+        result = os.system("python3 scripts/cryptobert_tw_gcp_weighting_search.py \
                 --model_name=$MODEL_NAME \
                 --path_output=$PATH_OUTPUT \
                 --path_data=$PATH_DATA \
@@ -135,12 +135,16 @@ if __name__ == "__main__":
                 --eval_batch_size='128' \
                 --learning_rate='5e-5' \
                 --warmup_steps='100'" % (config['weights_1'], config['weights_2']))
+        if 0 == result:
+            print("FINISHED RUN SUCCESFULLY")
+        else:
+            print("RUN DIDN'T EXECUTE SUCCESFULLY")
+            raise SystemExit()
 
         log['current_config'] = log['current_config'] + 1
 
         with open('/home/bijlesjvl/settings/log.json', 'w') as outfile:
             json.dump(log, outfile)
 
-        print("FINISHED RUN")
     print("FINISHED SEARCH")
 
