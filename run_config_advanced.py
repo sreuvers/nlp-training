@@ -4,6 +4,8 @@ import json
 import os
 from sklearn.model_selection import ParameterGrid
 import sys
+import subprocess
+import shlex
 
 def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
@@ -43,12 +45,16 @@ def get_search():
 
     return configs,log
 
-def initialize_data():
+def initialize_data(test=False):
     if os.path.exists('/home/bijlesjvl/data/finetuning/StockTwits/'):
         print("DATA ALREADY EXITS")
     else:
         ensure_dir("/home/bijlesjvl/data/finetuning/")
-        os.system("gsutil -m cp -r gs://thesis-tpu/data/StockTwits /home/bijlesjvl/data/finetuning/")
+        if test.lower()=="true":
+            print("GET TEST DATA")
+            os.system("gsutil -m cp -r gs://thesis-tpu/data/StockTwits_test /home/bijlesjvl/data/finetuning/")
+        else:
+            os.system("gsutil -m cp -r gs://thesis-tpu/data/StockTwits /home/bijlesjvl/data/finetuning/")
 
 def initialize_model(mode):
     if os.path.exists(f"/home/bijlesjvl/model/CryptoBERT_{mode}/pretrained"):
@@ -70,6 +76,16 @@ def initialize_scripts():
         os.system("rm /home/bijlesjvl/scripts/cryptobert_tw_gcp_weighting_search.py")
     os.system("wget https://raw.githubusercontent.com/sreuvers/nlp-training/main/cryptobert_tw_gcp_weighting_search.py -P /home/bijlesjvl/scripts/ -q")
 
+def run_command(command):
+    process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
+    while True:
+        output = process.stdout.readline()
+        if output == '' and process.poll() is not None:
+            break
+        if output:
+            print output.strip()
+    rc = process.poll()
+    return rc
 
 if __name__ == "__main__":
     [configs,log] = get_search()
@@ -82,11 +98,15 @@ if __name__ == "__main__":
     initialize_data()
 
     mode = sys.argv[1]
+    test = sys.argv[2]
     if mode == "FIN":
         print(f"SELECTED MODE IS: {mode}")
         os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_FIN/pretrained/"
         os.environ["MODEL_NAME"] = "CryptoBERT_FIN_fine-tuned"
-        os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
+        if test.lower() == 'true':
+            os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits_test/"
+        else:
+            os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
         os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
         os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
         PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
@@ -134,7 +154,7 @@ if __name__ == "__main__":
         ensure_dir(PATH_OUTPUT)
         ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
 
-        result = os.system("python3 scripts/cryptobert_tw_gcp_weighting_search.py \
+        command = "python3 scripts/cryptobert_tw_gcp_weighting_search.py \
                 --model_name=$MODEL_NAME \
                 --path_output=$PATH_OUTPUT \
                 --path_data=$PATH_DATA \
@@ -145,7 +165,11 @@ if __name__ == "__main__":
                 --train_batch_size='128' \
                 --eval_batch_size='128' \
                 --learning_rate='5e-5' \
-                --warmup_steps='100'" % (config['weights_1'], config['weights_2']))
+                --warmup_steps='100'" % (config['weights_1'], config['weights_2'])
+
+        result = run_command(command)
+        print(f"result command is: {result}")
+
         if 0 == result:
             print("FINISHED RUN SUCCESFULLY")
         else:
