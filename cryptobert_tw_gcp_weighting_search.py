@@ -177,4 +177,6 @@ if __name__ == "__main__":
     print("START TRAINING...")
     xmp.spawn(_mp_fn, args = (args,), nprocs=8, start_method="fork")
     print("FINISHED TRAINING!")
+    raise SystemExit()
+
 

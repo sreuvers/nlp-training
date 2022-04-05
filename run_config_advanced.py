@@ -45,7 +45,7 @@ def get_search():
 
     return configs,log
 
-def initialize_data(test=False):
+def initialize_data(test):
     if test.lower() == "true" and not os.path.exists('/home/bijlesjvl/data/finetuning/StockTwits_test/') :
         print("GET TEST DATA")
         os.system("gsutil -m cp -r gs://thesis-tpu/data/StockTwits_test /home/bijlesjvl/data/finetuning/")
@@ -94,26 +94,18 @@ if __name__ == "__main__":
     print(config)
 
     print("INITIALIZE DATA: ")
-    initialize_data()
 
     mode = sys.argv[1]
     test = sys.argv[2]
-    # if mode == "FIN":
-    #     print(f"SELECTED MODE IS: {mode}")
-    #     os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_FIN/pretrained/"
-    #     os.environ["MODEL_NAME"] = "CryptoBERT_FIN_fine-tuned"
-    #     if test.lower() == 'true':
-    #         os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits_test/"
-    #     else:
-    #         os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
-    #     os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
-    #     os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
-    #     PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_FIN_fine-tuned/"
+    if not test:
+        test = 'false'
+    initialize_data(test)
     if mode == "FIN":
         print(f"SELECTED MODE IS: {mode}")
         os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_FIN/pretrained/"
         os.environ["MODEL_NAME"] = "CryptoBERT_FIN_fine-tuned"
         if test.lower() == 'true':
+            print("TEST MODE ON")
             os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits_test/"
         else:
             os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
