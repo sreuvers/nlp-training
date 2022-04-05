@@ -64,6 +64,11 @@ def initialize_model(mode):
                         "gs://thesis-tpu/model/CryptoBERT_TW_pretrained_2/CryptoBERT_TW/*" \
                         "/home/bijlesjvl/model/CryptoBERT_TW/pretrained/""")
 
+def initialize_scripts():
+    ensure_dir("/home/bijlesjvl/scripts/")
+    os.system("rm /home/bijlesjvl/scripts/cryptobert_tw_gcp_weighting_search.py")
+    os.system("wget https://raw.githubusercontent.com/sreuvers/nlp-training/main/cryptobert_tw_gcp_weighting.py -q")
+
 
 if __name__ == "__main__":
     [configs,log] = get_search()
@@ -114,7 +119,7 @@ if __name__ == "__main__":
         ensure_dir(PATH_OUTPUT)
         ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
 
-        os.system("python3 cryptobert_tw_gcp_weighting_search.py \
+        os.system("python3 /home/bijlesjvl/scripts/cryptobert_tw_gcp_weighting_search.py \
                 --model_name=$MODEL_NAME \
                 --path_output=$PATH_OUTPUT \
                 --path_data=$PATH_DATA \
