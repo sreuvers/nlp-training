@@ -98,7 +98,7 @@ if __name__ == "__main__":
         os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
         os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
         PATH_OUTPUT = "/home/bijlesjvl/model/Bertweet_fine-tuned/"
-    else:
+    elif mode == "TW":
         print(f"SELECTED MODE IS: {mode}")
         os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_TW/pretrained/"
         os.environ["MODEL_NAME"] = "CryptoBERT_TW_fine-tuned"
@@ -106,6 +106,9 @@ if __name__ == "__main__":
         os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
         os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
         PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_TW_fine-tuned/"
+    else:
+        print(f"SELECTED MODE: {mode} IS NOT RECOGNIZED")
+        raise SystemExit()
 
     print("INITIALIZE MODEL: ")
     initialize_model(mode)
