@@ -48,6 +48,7 @@ def get_search():
 def initialize_data(test):
     if test.lower() == "true" and not os.path.exists('/home/bijlesjvl/data/finetuning/StockTwits_test/') :
         print("GET TEST DATA")
+        ensure_dir("/home/bijlesjvl/data/finetuning/")
         os.system("gsutil -m cp -r gs://thesis-tpu/data/StockTwits_test /home/bijlesjvl/data/finetuning/")
     elif os.path.exists('/home/bijlesjvl/data/finetuning/StockTwits/'):
         print("DATA ALREADY EXITS")
@@ -156,7 +157,7 @@ if __name__ == "__main__":
         ensure_dir(PATH_OUTPUT)
         ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
 
-        command = "python3 scripts/cryptobert_tw_gcp_weighting_search.py \
+        command = f"python3 scripts/cryptobert_tw_gcp_weighting_search.py \
                 --model_name={os.environ['MODEL_NAME']} \
                 --path_output={os.environ['PATH_OUTPUT']} \
                 --path_data={os.environ['PATH_DATA']} \
