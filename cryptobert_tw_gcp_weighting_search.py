@@ -83,9 +83,9 @@ def train_BERT(model, args):
         report_to="tensorboard",
         run_name="Finetuning on TPU",  # name of the W&B run (optional)
         evaluation_strategy="steps",
-        eval_steps = 50,
+        eval_steps = 100,
         logging_strategy="steps",
-        logging_steps=50
+        logging_steps=100
     )
 
     trainer = CustomTrainer(

@@ -83,6 +83,8 @@ def initialize_scripts():
         os.system("rm /home/bijlesjvl/scripts/cryptobert_tw_gcp_weighting_search.py")
     os.system(
         "wget https://raw.githubusercontent.com/sreuvers/nlp-training/main/cryptobert_tw_gcp_weighting_search.py -P /home/bijlesjvl/scripts/ -q")
+    os.system(
+        "wget https://raw.githubusercontent.com/sreuvers/nlp-training/main/get_command.py -P /home/bijlesjvl/settings/ -q")
 
 
 def run_command(command):
@@ -173,7 +175,7 @@ if __name__ == "__main__":
                     --train_batch_size='128' \
                     --eval_batch_size='128' \
                     --learning_rate='5e-5' \
-                    --warmup_steps='100'" % (config['weights_1'], config['weights_2'])
+                    --warmup_steps='300'" % (config['weights_1'], config['weights_2'])
         commands.append(command)
     with open('/home/bijlesjvl/settings/commands.json', 'w') as outfile:
         json.dump(commands, outfile)
