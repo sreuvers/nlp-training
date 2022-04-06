@@ -100,10 +100,6 @@ def run_command(command):
 if __name__ == "__main__":
     [configs, log] = get_search()
 
-    config = configs[int(log['current_config'])]
-    print("CURRENT CONFIG: ")
-    print(config)
-
     print("INITIALIZE DATA: ")
 
     mode = sys.argv[1]
