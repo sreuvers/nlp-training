@@ -150,40 +150,34 @@ if __name__ == "__main__":
 
     print("INITIALIZE SCRIPTS: ")
     initialize_scripts()
+    commands = []
+    for config in configs:
+        RUN_NAME = ""
+        for key, value in config.items():
+            if key == list(config.keys())[-1]:
+                RUN_NAME = RUN_NAME + f"{key}_{value}"
+            else:
+                RUN_NAME = RUN_NAME + f"{key}_{value}_"
 
-    RUN_NAME = ""
-    for key, value in config.items():
-        if key == list(config.keys())[-1]:
-            RUN_NAME = RUN_NAME + f"{key}_{value}"
-        else:
-            RUN_NAME = RUN_NAME + f"{key}_{value}_"
-    print("START NEW RUN")
-    print(f"RUN NAME: {RUN_NAME}")
+        os.environ["RUN_NAME"] = RUN_NAME
+        os.environ["PATH_OUTPUT"] = PATH_OUTPUT + RUN_NAME
 
-    os.environ["RUN_NAME"] = RUN_NAME
-    os.environ["PATH_OUTPUT"] = PATH_OUTPUT + RUN_NAME
+        ensure_dir(PATH_OUTPUT)
+        ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
 
-    ensure_dir(PATH_OUTPUT)
-    ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
 
-    log['current_config'] = log['current_config'] + 1
-
-    with open('/home/bijlesjvl/settings/log.json', 'w') as outfile:
-        json.dump(log, outfile)
-
-    command = f"python3 scripts/cryptobert_tw_gcp_weighting_search.py \
-                --model_name={os.environ['MODEL_NAME']} \
-                --path_output={os.environ['PATH_OUTPUT']} \
-                --path_data={os.environ['PATH_DATA']} \
-                --path_model={os.environ['PATH_MODEL']} \
-                --weights_1=%s \
-                --weights_2=%s \
-                --epochs='3' \
-                --train_batch_size='128' \
-                --eval_batch_size='128' \
-                --learning_rate='5e-5' \
-                --warmup_steps='100'" % (config['weights_1'], config['weights_2'])
-
-    print(f"command is: {command}")
-    os.system(command)
-    # result = run_command(command)
+        command = f"python3 scripts/cryptobert_tw_gcp_weighting_search.py \
+                    --model_name={os.environ['MODEL_NAME']} \
+                    --path_output={os.environ['PATH_OUTPUT']} \
+                    --path_data={os.environ['PATH_DATA']} \
+                    --path_model={os.environ['PATH_MODEL']} \
+                    --weights_1=%s \
+                    --weights_2=%s \
+                    --epochs='3' \
+                    --train_batch_size='128' \
+                    --eval_batch_size='128' \
+                    --learning_rate='5e-5' \
+                    --warmup_steps='100'" % (config['weights_1'], config['weights_2'])
+        commands.append(command)
+    with open('/home/bijlesjvl/settings/commands.json', 'w') as outfile:
+        json.dump(command, outfile)
