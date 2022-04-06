@@ -183,6 +183,7 @@ if __name__ == "__main__":
                 --eval_batch_size='128' \
                 --learning_rate='5e-5' \
                 --warmup_steps='100'" % (config['weights_1'], config['weights_2'])
-    print(f"command is: {command}")
 
-    result = run_command(command)
+    print(f"command is: {command}")
+    os.system(command)
+    # result = run_command(command)
