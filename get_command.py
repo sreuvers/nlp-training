@@ -10,7 +10,7 @@ with open(settings_folder + 'commands.json') as json_file:
 with open(settings_folder + 'log.json') as json_file:
     log = json.load(json_file)
 
-log['current_config'] = sys.argv[1] + 1
+log['current_config'] = int(sys.argv[1]) + 1
 with open(settings_folder + 'log.json', 'w') as outfile:
     json.dump(log, outfile)
-print(commands[sys.argv[1]])
+print(commands[int(sys.argv[1])])
