@@ -6,7 +6,7 @@ from sklearn.model_selection import ParameterGrid
 import sys
 import subprocess
 import shlex
-
+import time
 def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
     if not os.path.exists(directory):
@@ -76,18 +76,33 @@ def initialize_scripts():
         os.system("rm /home/bijlesjvl/scripts/cryptobert_tw_gcp_weighting_search.py")
     os.system("wget https://raw.githubusercontent.com/sreuvers/nlp-training/main/cryptobert_tw_gcp_weighting_search.py -P /home/bijlesjvl/scripts/ -q")
 
+def wait_timeout(proc, seconds):
+    """Wait for a process to finish, or raise exception after timeout"""
+    start = time.time()
+    end = start + seconds
+    interval = min(seconds / 1000.0, .25)
+
+    while True:
+        result = proc.poll()
+        if result is not None:
+            return result
+        if time.time() >= end:
+            return 0
+        time.sleep(interval)
+
 def run_command(command):
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
-    while True:
-        output = process.stdout.readline()
-        if output == '' and process.poll() is not None:
-            break
-        if output:
-            print(output.strip())
-            if "TOKENIZED DATASET!" in output.strip():
-                break
-    rc = process.poll()
-    return rc
+    result = wait_timeout(process, 60)
+    # while True:
+    #     output = process.stdout.readline()
+    #     if output == '' and process.poll() is not None:
+    #         break
+    #     if output:
+    #         print(output.strip())
+    #         if "TOKENIZED DATASET!" in output.strip():
+    #             break
+    # rc = process.poll()
+    return result
 
 if __name__ == "__main__":
     [configs,log] = get_search()
