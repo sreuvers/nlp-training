@@ -84,6 +84,8 @@ def run_command(command):
             break
         if output:
             print(output.strip())
+            if "TOKENIZED DATASET!" in output.strip():
+                break
     rc = process.poll()
     return rc
 
