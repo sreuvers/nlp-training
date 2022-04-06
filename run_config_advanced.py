@@ -176,4 +176,4 @@ if __name__ == "__main__":
                     --warmup_steps='100'" % (config['weights_1'], config['weights_2'])
         commands.append(command)
     with open('/home/bijlesjvl/settings/commands.json', 'w') as outfile:
-        json.dump(command, outfile)
+        json.dump(commands, outfile)
