@@ -165,6 +165,11 @@ if __name__ == "__main__":
     ensure_dir(PATH_OUTPUT)
     ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
 
+    log['current_config'] = log['current_config'] + 1
+
+    with open('/home/bijlesjvl/settings/log.json', 'w') as outfile:
+        json.dump(log, outfile)
+
     command = f"python3 scripts/cryptobert_tw_gcp_weighting_search.py \
                 --model_name={os.environ['MODEL_NAME']} \
                 --path_output={os.environ['PATH_OUTPUT']} \
@@ -180,8 +185,3 @@ if __name__ == "__main__":
     print(f"command is: {command}")
 
     result = run_command(command)
-    print(f"result command is: {result}")
-    log['current_config'] = log['current_config'] + 1
-
-    with open('/home/bijlesjvl/settings/log.json', 'w') as outfile:
-        json.dump(log, outfile)
