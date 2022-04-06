@@ -107,8 +107,9 @@ if __name__ == "__main__":
     print("INITIALIZE DATA: ")
 
     mode = sys.argv[1]
-    test = sys.argv[2]
-    if not test:
+    if len(sys.argv) > 1:
+        test = sys.argv[2]
+    else:
         test = 'false'
     initialize_data(test)
     if mode == "FIN":
@@ -177,7 +178,7 @@ if __name__ == "__main__":
                 --path_model={os.environ['PATH_MODEL']} \
                 --weights_1=%s \
                 --weights_2=%s \
-                --epochs='1' \
+                --epochs='3' \
                 --train_batch_size='128' \
                 --eval_batch_size='128' \
                 --learning_rate='5e-5' \
