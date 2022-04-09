@@ -22,9 +22,18 @@ def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    elif "model" in file_path and os.path.exists(file_path):
-        os.makedirs(uniquify(file_path))
 
+
+def ensure_dir_pathoutput(file_path):
+    file_path = file_path + "/"
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    else:
+        file_path = uniquify(file_path)
+        os.makedirs(file_path)
+
+    return file_path
 
 def initialize_grid_search():
     param_grid = {"weights_1": [1, 1.5, 2, 4, 6, 8],
@@ -177,11 +186,9 @@ if __name__ == "__main__":
                 RUN_NAME = RUN_NAME + f"{key}_{value}_"
 
         os.environ["RUN_NAME"] = RUN_NAME
-        os.environ["PATH_OUTPUT"] = PATH_OUTPUT + RUN_NAME
-
-        ensure_dir(PATH_OUTPUT)
-        ensure_dir(PATH_OUTPUT + RUN_NAME + "/")
-
+        PATH_OUTPUT = ensure_dir_pathoutput(PATH_OUTPUT + RUN_NAME)
+        print(f"path_output is: {PATH_OUTPUT}")
+        os.environ["PATH_OUTPUT"] = PATH_OUTPUT
 
         command = f"python3 scripts/cryptobert_tw_gcp_weighting_search.py \
                     --model_name={os.environ['MODEL_NAME']} \
