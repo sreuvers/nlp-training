@@ -152,7 +152,7 @@ if __name__ == "__main__":
         PATH_OUTPUT = "/home/bijlesjvl/model/Bertweet_fine-tuned/"
     elif mode == "Bert":
         print(f"SELECTED MODE IS: {mode}")
-        os.environ["PATH_MODEL"] = "vinai/bertweet-base"
+        os.environ["PATH_MODEL"] = "bert-base-uncased"
         os.environ["MODEL_NAME"] = "Bert"
         os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
         os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
