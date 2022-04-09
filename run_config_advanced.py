@@ -8,15 +8,26 @@ import subprocess
 import shlex
 import time
 
+def uniquify(path):
+    filename, extension = os.path.splitext(path)
+    counter = 1
+
+    while os.path.exists(path):
+        path = filename + "_" + str(counter)
+        counter += 1
+
+    return path
 
 def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
     if not os.path.exists(directory):
         os.makedirs(directory)
+    elif "model" in file_path and os.path.exists(file_path):
+        os.makedirs(uniquify(file_path))
 
 
 def initialize_grid_search():
-    param_grid = {"weights_1": [1, 1.5, 2, 4, 6],
+    param_grid = {"weights_1": [1, 1.5, 2, 4, 6, 8],
                   "weights_2": [1],
                   "learning_rate": [3e-5],
                   "num_epochs": [3]}
@@ -130,6 +141,14 @@ if __name__ == "__main__":
         os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
         os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
         PATH_OUTPUT = "/home/bijlesjvl/model/Bertweet_fine-tuned/"
+    elif mode == "Bert":
+        print(f"SELECTED MODE IS: {mode}")
+        os.environ["PATH_MODEL"] = "vinai/bertweet-base"
+        os.environ["MODEL_NAME"] = "Bert"
+        os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
+        os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
+        os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
+        PATH_OUTPUT = "/home/bijlesjvl/model/Bert_fine-tuned/"
     elif mode == "TW":
         print(f"SELECTED MODE IS: {mode}")
         os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_TW/pretrained/"
