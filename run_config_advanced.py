@@ -9,13 +9,13 @@ import shlex
 import time
 
 def uniquify(path):
-    filename, extension = os.path.splitext(path)
+    filename = os.path.dirname(path)
     counter = 1
 
     while os.path.exists(path):
         path = filename + "_" + str(counter)
         counter += 1
-
+    path = path + "/"
     return path
 
 def ensure_dir(file_path):
@@ -25,7 +25,6 @@ def ensure_dir(file_path):
 
 
 def ensure_dir_pathoutput(file_path):
-    file_path = file_path + "/"
     directory = os.path.dirname(file_path)
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -150,14 +149,7 @@ if __name__ == "__main__":
         os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
         os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
         PATH_OUTPUT = "/home/bijlesjvl/model/Bertweet_fine-tuned/"
-    elif mode == "Bert":
-        print(f"SELECTED MODE IS: {mode}")
-        os.environ["PATH_MODEL"] = "bert-base-uncased"
-        os.environ["MODEL_NAME"] = "Bert"
-        os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
-        os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
-        os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
-        PATH_OUTPUT = "/home/bijlesjvl/model/Bert_fine-tuned/"
+
     elif mode == "TW":
         print(f"SELECTED MODE IS: {mode}")
         os.environ["PATH_MODEL"] = "/home/bijlesjvl/model/CryptoBERT_TW/pretrained/"
@@ -166,6 +158,14 @@ if __name__ == "__main__":
         os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
         os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
         PATH_OUTPUT = "/home/bijlesjvl/model/CryptoBERT_TW_fine-tuned/"
+    elif mode == "Bert":
+        print(f"SELECTED MODE IS: {mode}")
+        os.environ["PATH_MODEL"] = "bert-base-uncased"
+        os.environ["MODEL_NAME"] = "Bert"
+        os.environ["PATH_DATA"] = "/home/bijlesjvl/data/finetuning/StockTwits/"
+        os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib"
+        os.environ["XRT_TPU_CONFIG"] = "localservice;0;localhost:51011"
+        PATH_OUTPUT = "/home/bijlesjvl/model/Bert_fine-tuned/"
     else:
         print(f"SELECTED MODE: {mode} IS NOT RECOGNIZED")
         raise SystemExit()
@@ -177,6 +177,7 @@ if __name__ == "__main__":
     print("INITIALIZE SCRIPTS: ")
     initialize_scripts()
     commands = []
+    PATH_OUTPUT =  ensure_dir_pathoutput(PATH_OUTPUT)
     for config in configs:
         RUN_NAME = ""
         for key, value in config.items():
@@ -186,7 +187,7 @@ if __name__ == "__main__":
                 RUN_NAME = RUN_NAME + f"{key}_{value}_"
 
         os.environ["RUN_NAME"] = RUN_NAME
-        PATH_OUTPUT = ensure_dir_pathoutput(PATH_OUTPUT + RUN_NAME)
+        PATH_OUTPUT = PATH_OUTPUT + RUN_NAME
         print(f"path_output is: {PATH_OUTPUT}")
         os.environ["PATH_OUTPUT"] = PATH_OUTPUT
 
