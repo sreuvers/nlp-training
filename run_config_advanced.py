@@ -35,7 +35,7 @@ def ensure_dir_pathoutput(file_path):
     return file_path
 
 def initialize_grid_search():
-    param_grid = {"weights_1": [1, 1.5, 2, 4, 6, 8],
+    param_grid = {"weights_1": [1, 1.5, 1.75, 2, 4, 6, 8],
                   "weights_2": [1],
                   "learning_rate": [3e-5],
                   "num_epochs": [3]}
@@ -186,10 +186,8 @@ if __name__ == "__main__":
             else:
                 RUN_NAME = RUN_NAME + f"{key}_{value}_"
 
-        os.environ["RUN_NAME"] = RUN_NAME
-        PATH_OUTPUT = PATH_OUTPUT + RUN_NAME
-        print(f"path_output is: {PATH_OUTPUT}")
-        os.environ["PATH_OUTPUT"] = PATH_OUTPUT
+        print(f"path_output is: {PATH_OUTPUT + RUN_NAME}")
+        os.environ["PATH_OUTPUT"] = PATH_OUTPUT + RUN_NAME
 
         command = f"python3 scripts/cryptobert_tw_gcp_weighting_search.py \
                     --model_name={os.environ['MODEL_NAME']} \
